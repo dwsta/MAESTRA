@@ -51,6 +51,23 @@ methods (Static = true)
         clear all;
 
     end
+
+    function wrapperPIVSPMD(rootdir,alias,cfg_data,filoutVEL,ifile,IMAGES,imgPath)
+        
+        pivdir = fullfile(rootdir,'output',alias,'piv');
+        if ~exist(pivdir,'dir'); mkdir(pivdir); end
+        
+        ext = 'tif';
+        [reference_frames, vecind,IMAGES] = contPIV.reference_selection(IMAGES,imgPath,ext,cfg_data,pivdir,filoutVEL,ifile,alias);
+        vecind = [1:10]; %TESTING
+        xdrift = zeros(1,1,size(IMAGES,3));
+        ydrift = zeros(1,1,size(IMAGES,3));            
+        contPIV.compute_deformations(IMAGES,cfg_data,pivdir,alias,ifile,reference_frames,vecind,xdrift,ydrift);
+        clear IMAGES xdrift ydrift; 
+
+    end
+
+
     
     [X,Y,T,U,V,Xdrift,Ydrift] = readPIV_bin(filename);
 

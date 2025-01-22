@@ -114,7 +114,7 @@ for igrid = 1:Ngrids
     output(igrid).xvec = xvec + dum_cfg.Deformation.wdw_size/2;
     output(igrid).yvec = yvec + dum_cfg.Deformation.wdw_size/2;
     output(igrid).tvec = tvec;
-    output(igrid).repvec = repvec;
+    % output(igrid).repvec = repvec;
     output(igrid).U = U;
     output(igrid).V = V;
 
