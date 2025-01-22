@@ -21,7 +21,9 @@ end
 inf = imfinfo(files{1});
 % Pre-allocation as single or double, faster than allocating as uint and
 % converting later
+
 IMAGES = zeros(inf.Width, inf.Height, length(files), precision);
+
 
 if parRun
     parfor ii = 1 : length(files)

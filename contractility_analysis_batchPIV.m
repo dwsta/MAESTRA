@@ -1,11 +1,13 @@
 clearvars;
 restoredefaultpath;
-addpath 'D:\Code\Contractility_GitHub - Adithan - Final';
+addpath 'D:\Cloud\Git\MAESTRA';
 
 % Read the jobfile
 % rootdir = 'E:\Contractility_3\2023-03-25\treatment_30min_2023-03-25\contractility_run_20241124_130815_WL64\';
 % rootdir = 'E:\Contractility_3\2023-03-25\treatment_30min_2023-03-25\contractility_run_20241110_194855_beads_driftCorrected';
-rootdir = 'E:\Contractility_3\2023-03-25\pretreatment_2023-03-25\test_batch';
+% rootdir =
+% 'E:\Contractility_3\2023-03-25\pretreatment_2023-03-25\test_batch';
+rootdir = 'D:\Data\Contractility_batch_test\contractility_run_20250121_210036\';
 cd(rootdir);
 
 t = readJobFile2('jobfile.csv', rootdir);
@@ -14,6 +16,10 @@ t = readJobFile2('jobfile.csv', rootdir);
 t = appUtils.checkVideoLocation(t,rootdir);
 
 cfg_data = contUtils.loadJsonConfig(fullfile(rootdir,'config.json'));
+cfg_GPU = cfg_data; 
+cfg_CPU = cfg_data;
+cfg_CPU.Performance.UseGPU = false; 
+
 
 filoutVEL = fullfile(rootdir,'vel');
 if (cfg_data.ReferenceSelection.ReferenceSelectionMode ~= 0)
@@ -26,35 +32,74 @@ warning('off');
 % w = waitbar(0,'PIV...');
 % w.UserData = N;
 
-c = parcluster('local');
+% cCPU = parcluster('local');
+
+
+% cGPU = parcluster('local');
+
+
 % job = createJob(c);
+
+p = parpool('local',2);
+%%
+spmd
+    if labindex == 1
+        gpuDevice(1);
+    elseif labindex == 2
+        gpuDevice([]);
+    end
+end
 
 % try
 
 %%
 
-% Separate CPU and GPU queue 
-    for ifile = 1 : 4 % length(files)
-        % tt=tic; 
-        
-        % w=waitbar(ifile/length(files));
-        
-        alias = t.Alias{ifile};
-        imgPath = t.Location{ifile}; ext = 'tif';
-        
-        % contPIV.wrapperPIV(rootdir,alias,cfg_data,filoutVEL,ifile,imgPath,ext);
 
-        job(ifile) = batch(c,@contPIV.wrapperPIV, 0, {rootdir,alias,cfg_data,filoutVEL,ifile,imgPath,ext},'Pool',3);
-        
-
-        % wholeFOV.whole_FOV_analysis(rootdir,alias,cfg_data,csv_whole_FOV);
-        % toc(tt)
-    end
-% end
-
-% submit(job);
+for ii = 1 : 2
     
-% fclose(csv_whole_FOV);
+    f(ii) = parfeval(@contPIV.wrapperBatchPIV,1, rootdir,cfg_GPU,filoutVEL,t,ii);
+
+end
+
+
+
+
+
+
+
+
+
+
+
+
+%% Separate CPU and GPU queue 
+% 
+% tt=tic; 
+% cpuFilInd = [1:10];
+% jobCPU = createJob(cCPU);
+% createTask(jobCPU,@contPIV.wrapperBatchPIV, 0, {rootdir,cfg_CPU,filoutVEL,t,cpuFilInd});
+% % jobCPU = batch(cCPU,@contPIV.wrapperBatchPIV, 0, {rootdir,cfg_CPU,filoutVEL,t,cpuFilInd},'Pool',2);
+% 
+% 
+% gpuFilInd = [11:20];
+% jobGPU = createJob(cGPU);
+% createTask(jobGPU,@contPIV.wrapperBatchPIV, 0, {rootdir,cfg_GPU,filoutVEL,t,gpuFilInd});
+% 
+% % batch(cGPU,@contPIV.wrapperBatchPIV, 0, {rootdir,cfg_GPU,filoutVEL,t,gpuFilInd},'Pool',2);
+% 
+% % end
+% 
+% submit(jobCPU);
+% submit(jobGPU);
+% 
+% while 1
+%    if wait(jobCPU) & wait(jobGPU)
+%        break
+%    end
+%    pause(1);
+% end
+% toc(tt)
+% % fclose(csv_whole_FOV);
 
 
 
