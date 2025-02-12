@@ -96,10 +96,10 @@ for igrid = 1:Ngrids
     % writeToLog(app.Logfile,[alias,' post-processing PIV pass ',num2str(igrid)]);
     %         [U,V] = filter_PIV(U,V);
 
-    if useGPU% CPU -> GPU
-        U = gpuArray(U);
-        V = gpuArray(V);
-    end
+    % if useGPU% CPU -> GPU
+    %     U = gpuArray(U);
+    %     V = gpuArray(V);
+    % end
 
     U = contPIV.smoothn_rik(U,0.001,'robust');
     V = contPIV.smoothn_rik(V,0.001,'robust');
@@ -109,7 +109,7 @@ for igrid = 1:Ngrids
         V = gather(V);
     end
 
-    disp(any(gpuDeviceTable().DeviceSelected));
+    % disp(any(gpuDeviceTable().DeviceSelected));
     
     output(igrid).xvec = xvec + dum_cfg.Deformation.wdw_size/2;
     output(igrid).yvec = yvec + dum_cfg.Deformation.wdw_size/2;

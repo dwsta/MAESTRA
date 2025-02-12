@@ -5,6 +5,8 @@ methods (Static = true)
     [output] = compute_deformations(IMAGES,cfg_data,filpiv,alias,iexp,reference_frames,vecind,xdrift,ydrift);
     
     [IMAGES] = imageLoader(imgpath,ext,precision,parRun);
+    
+    [IMAGES] = imageLoader_RS(imgpath,ext,varargin);
 
     [reference_frames,vecind,IMAGES] = reference_selection(IMAGES,imgpath,ext,cfg_data,filpiv,filoutVEL,iexp,alias)
 
@@ -44,7 +46,7 @@ methods (Static = true)
         [IMAGES] = contPIV.imageLoader(imgPath,ext);
         
         [reference_frames, vecind,IMAGES] = contPIV.reference_selection(IMAGES,imgPath,ext,cfg_data,pivdir,filoutVEL,ifile,alias);
-        vecind = [1:10]; %TESTING
+        % vecind = [1:10]; %TESTING
         xdrift = zeros(1,1,size(IMAGES,3));
         ydrift = zeros(1,1,size(IMAGES,3));            
         contPIV.compute_deformations(IMAGES,cfg_data,pivdir,alias,ifile,reference_frames,vecind,xdrift,ydrift);
@@ -63,7 +65,7 @@ methods (Static = true)
         xdrift = zeros(1,1,size(IMAGES,3));
         ydrift = zeros(1,1,size(IMAGES,3));            
         contPIV.compute_deformations(IMAGES,cfg_data,pivdir,alias,ifile,reference_frames,vecind,xdrift,ydrift);
-        clear IMAGES xdrift ydrift; 
+        % clear IMAGES xdrift ydrift; 
 
     end
 
@@ -71,6 +73,7 @@ methods (Static = true)
     
     [X,Y,T,U,V,Xdrift,Ydrift] = readPIV_bin(filename);
 
+    [cfg_data] = loadJsonConfig(configfile);
 
 end
 

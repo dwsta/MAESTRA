@@ -78,7 +78,7 @@ classdef contractilityLoader < handle
                 warning('No platemap present. Trying with well and well # as first two arguments.');
 
                 indsT = indsNone; 
-                if ~isempty(compound)
+                if ~isempty(compound) 
                     for ii = 1 : length(compound); indsT = indsT | strcmpi(obj.data.wellId,wellId{ii}); end;
                     inds = inds & indsT;
                 end
@@ -130,6 +130,10 @@ classdef contractilityLoader < handle
                     names = regexp( data.alias, pattern, 'tokens','once');
                     data.wellId = cellfun(@(x) x{1},names);
                     data.wellNo = cellfun( @(x) str2num( string(x{2})),names);
+                    pattern = '_r_(\d+)_c_(\d+)';
+                    tt = regexp( data.alias, pattern, 'tokens','once');
+                    data.posId = string(cellfun(@(x) sprintf('r_%s_c_%s',x{1},x{2}),tt,'UniformOutput',false));
+                    
                 end
 
             end
@@ -162,10 +166,13 @@ classdef contractilityLoader < handle
                 minY = 0;
                 clf; hold on; 
                 nn = min(height(sub), m*n);
-                for ii=1:nn; subplot(m,n,ii); plot(sub.signal{ii}); ylim([minY maxY]);
-                % title(sub.alias{ii}); 
-                title(sprintf('Well-%s%0.3d - %s',sub.wellId(ii),sub.wellNo(ii), sub.posId{ii}),'Interpreter','none');
+                for ii=1:nn; subplot(m,n,ii); plot(sub.time{ii},sub.signal{ii},'LineWidth',2); ylim([minY maxY]);
+                    try
+                        % title(sub.alias{ii},'FontSize',6); 
+                        title(sprintf('Well-%s%0.3d - %s',sub.wellId(ii),sub.wellNo(ii), sub.posId{ii}),'Interpreter','none');
+                    end
                 end
+                % set(gca,'LineWidth')
             end
 
     end
@@ -177,13 +184,14 @@ classdef contractilityLoader < handle
                     obj (1,1) contractilityLoader
                     metric (1,1) string
                     alias (1,:) cell = {}
-                    compound (1,1) string = {}
+                    compound (1,:) cell = {}
                     conc = {}
                     condId  (1,:) = {} 
                     posId (1,:) = {}
                 end
                 sub = filter(obj, alias, compound, conc, condId, posId);
                 xx = [sub.(metric)];
+                % Xpos = length(get(gca,'Children'))*max(abs(xx(:)))+max(abs(xx(:)))*50;
                 Xpos = length(get(gca,'Children'))+1;
                 gg = xx.*0 + Xpos;
                 boxplot(xx,gg,'Positions',Xpos); hold on; 

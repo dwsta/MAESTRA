@@ -1,4 +1,4 @@
-function [IMAGES,IMAGE_NAMES] = imageLoader(imgpath,ext,varargin)
+function [IMAGES,IMAGE_NAMES] = imageLoader_RS(imgpath,ext,varargin)
 
 % For now we only accept videos as image sequences
 buf = ['*',ext];

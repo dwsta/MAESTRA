@@ -1,22 +1,23 @@
 clearvars;
 restoredefaultpath;
 
+addpath 'D:\Cloud\Git\MAESTRA';
 % addpath 'H:\2023-03-25\Elastography\Contractility_GitHub';
-addpath 'E:\Contractility_GitHub - Adithan\';
+% addpath 'E:\Contractility_GitHub - Adithan\';
 
 % Read the jobfile
-rootdir = 'E:\Contractility_3\2023-03-25\treatment_30min_2023-03-25\contractility_run_20241124_130815_WL64\';
+rootdir = 'E:\T3_1224_CAT\contractility_run_20250119_123809\';
 t = readJobFile2('jobfile.csv', rootdir);
 
 % Search for deformations_pass_2.bin 
 parentPath = fullfile(rootdir, 'output');
-[files] = searchForFilesRecursively(parentPath, 'smooth_deformations_pass1.bin','',1);
-files(contains(files,"_001") | contains(files,"_012")) = []; % No idea what 001 and 012 wells are 
+[files] = appUtils.searchForFilesRecursively(parentPath, 'smooth_deformations_pass1.bin','',1);
+% files(contains(files,"_001") | contains(files,"_012")) = []; % No idea what 001 and 012 wells are 
 pivFolders = cellfun(@(x) fileparts(x),files,'UniformOutput',false); 
 fileNames = cellfun(@(x) getFileName(x),files,'UniformOutput',false);
 
 % Rewrite config
-cfg_data = loadJsonConfig(fullfile(rootdir,'config.json'));
+cfg_data =  contPIV.loadJsonConfig(fullfile(rootdir,'config.json'));
 
 whichPass = 1;
 
@@ -38,8 +39,10 @@ for ifile = 1 : length(files)
     % Read the images
     
     % TFM_step(rootdir,alias,cfg_data);
-    f(ifile) = parfeval(backgroundPool,@TFM_step,0,rootdir,alias,cfg_data);
+    % f(ifile) = parfeval(backgroundPool,@contTFM.TFM_step_nPass,0,rootdir,alias,cfg_data,whichPass);
     
+    contTFM.TFM_step_nPass(rootdir,alias,cfg_data,whichPass);
+    waitbar(ifile/N,w)
     % Uncomment for PIV
     % disp([alias,' Loading Images']);
     % 
@@ -62,8 +65,8 @@ for ifile = 1 : length(files)
 
 end
 
-afterEach(f,@(~)updateWaitbar(w),0);
-afterAll(f,@(~)delete(w),0);
+% afterEach(f,@(~)updateWaitbar(w),0);
+% afterAll(f,@(~)delete(w),0);
 
 
 function updateWaitbar(w)

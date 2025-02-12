@@ -12,7 +12,7 @@ PIV_file = fullfile(pivdir,['smooth_deformations_pass',num2str(Ngrids),'.bin']);
 E = cfg_data.TFM.GelStiffness*1e3;
 h = cfg_data.TFM.GelThickness;
 fcalx = cfg_data.TFM.CalibrationFactor;
-[xvec,yvec,tvec,U,V,Xdrift,Ydrift] = readPIV_bin(PIV_file);
+[xvec,yvec,tvec,U,V,Xdrift,Ydrift] = contPIV.readPIV_bin(PIV_file);
 Um = nanmean(U,4);
 Vm = nanmean(V,4);
 Ntimepoints = length(tvec);
@@ -31,7 +31,7 @@ parfor itimepoint = 1 : Ntimepoints
     u = Um(:,:,itimepoint);
     v = Vm(:,:,itimepoint);
     [tx,ty,nxx,nxy,nyy,ut0,vt0,X0,Y0,Lx,Ly]...
-        = mytrac_msm_2D_rik_from_dp(E,h,h,nx0,ny0,Xgrid,Ygrid,u,v,fcalx,Nyq);
+        = contTFM.mytrac_msm_2D_rik_from_dp(E,h,h,nx0,ny0,Xgrid,Ygrid,u,v,fcalx,Nyq);
     TX(:,:,itimepoint) = tx;
     TY(:,:,itimepoint) = ty;
     SXX(:,:,itimepoint) = nxx; 
