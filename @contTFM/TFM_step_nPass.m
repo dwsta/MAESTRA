@@ -9,10 +9,28 @@ end
 Ngrids = nPass; 
 pivdir = fullfile(rootdir,'output',alias,'piv');
 PIV_file = fullfile(pivdir,['smooth_deformations_pass',num2str(Ngrids),'.bin']);
-E = cfg_data.TFM.GelStiffness*1e3;
+
+% If a plateReader object is attached to GelStiffness instead of a scalar,
+% match the alias to each well
+if isobject(cfg_data.TFM.GelStifness)
+    msp = cfg_data.TFM.GelStifness;
+    if isfield(cfg_data.TFM,'wellPattern')
+        pattern = cfg_data.TFM,'wellPattern';
+    else
+        pattern = 'Well__(\w)_(\d+)';
+    end
+    wellId = regexp(alias,pattern,'tokens','once');
+    if isempty(wellId)
+        error('Cannot match alias in stiffness map');
+    end
+    E = str2num(msp.getCompound(wellId(1),str2num(wellId{2}))) * 1e3;
+    disp([alias ' - ' num2str(E)])
+else
+    E = cfg_data.TFM.GelStiffness*1e3;
+end
 h = cfg_data.TFM.GelThickness;
 fcalx = cfg_data.TFM.CalibrationFactor;
-[xvec,yvec,tvec,U,V,Xdrift,Ydrift] = readPIV_bin(PIV_file);
+[xvec,yvec,tvec,U,V,Xdrift,Ydrift] = contPIV.readPIV_bin(PIV_file);
 Um = nanmean(U,4);
 Vm = nanmean(V,4);
 Ntimepoints = length(tvec);
@@ -31,7 +49,7 @@ parfor itimepoint = 1 : Ntimepoints
     u = Um(:,:,itimepoint);
     v = Vm(:,:,itimepoint);
     [tx,ty,nxx,nxy,nyy,ut0,vt0,X0,Y0,Lx,Ly]...
-        = mytrac_msm_2D_rik_from_dp(E,h,h,nx0,ny0,Xgrid,Ygrid,u,v,fcalx,Nyq);
+        = contTFM.mytrac_msm_2D_rik_from_dp(E,h,h,nx0,ny0,Xgrid,Ygrid,u,v,fcalx,Nyq);
     TX(:,:,itimepoint) = tx;
     TY(:,:,itimepoint) = ty;
     SXX(:,:,itimepoint) = nxx; 

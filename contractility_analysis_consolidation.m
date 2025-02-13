@@ -1,11 +1,12 @@
 clearvars;
-restoredefaultpath;
-addpath 'D:\Code\Contractility_GitHub - Adithan - Final';
+% restoredefaultpath;
+% addpath 'D:\Code\Contractility_GitHub - Adithan - Final';
+addpath 'C:\Users\MercolaLab\Documents\Git\MAESTRA'
 
 % Read the jobfile
 % rootdir = 'E:\Contractility_3\2023-03-25\treatment_30min_2023-03-25\contractility_run_20241124_130815_WL64\';
 % rootdir = 'E:\Contractility_3\2023-03-25\treatment_30min_2023-03-25\contractility_run_20241110_194855_beads_driftCorrected';
-rootdir = 'E:\Contractility_3\2023-03-25\treatment_30min_2023-03-25\dynamic_contractility_run_20241015_164036_Mito';
+rootdir = "H:\T2_1224_MSP\TMRM_bluebeads_interleaved_AK_OM_20241226190508\contractility_run_20241229_190803";
 
 t = readJobFile2('jobfile.csv', rootdir);
 
@@ -61,7 +62,7 @@ function output_file_connections = create_csv(cfg_data,rootdir,whichPass)
 % Helper function to create the csv output files and remove clutter from the main loop
 % For whole FOV
 if cfg_data.TFM.DoTFM
-    outcsv = fullfile(rootdir,sprintf(['contractility_motion_pass%d_',datestr(now,30),'.csv'],whichPass));
+    outcsv = fullfile(rootdir,sprintf(['contractility_traction_pass%d_',datestr(now,30),'.csv'],whichPass));
     headers = {'alias','signal','time','peak_ID','mean_amplitude','mean_peak_duration','mean_rise_time', 'mean_fall_time', 'mean_pw90', 'mean_pw50', 'mean_pw30', 'mean_peak_value', 'mean_baseline', 'mean_valley',...
     'mean_E','mean_nu','mean_G', 'mean_K', ...
     'sd_amplitude', 'sd_peak_duration' ,'sd_rise_time', 'sd_fall_time', 'sd_pw90', 'sd_pw50', 'sd_pw30', 'sd_peak_value', 'sd_baseline', 'sd_valley',...

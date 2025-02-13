@@ -153,23 +153,23 @@ end
 
 N_BATCHES = ceil(N_KEPT_WDWS/BATCH_LENGTH);
 
-%DWS - load whole darn thing into gpumemory
-if cfg_data.Performance.UseGPU
-    
-    %DWS - check we won't blow up GPU
-    actual_max_gpu_mem = gpuDevice().AvailableMemory;
-    images_size = a.bytes;
-    
-    %make sure to leave a buffer
-    try
-        if images_size < actual_max_gpu_mem-MAX_GPU_MEM
-            IMAGES = gpuArray(IMAGES);
-            disp('loaded into memory');
-        end
-    catch IM
-        disp('failed to load into GPU');
-    end
-end
+% %DWS - load whole darn thing into gpumemory
+% if cfg_data.Performance.UseGPU
+% 
+%     %DWS - check we won't blow up GPU
+%     actual_max_gpu_mem = gpuDevice().AvailableMemory;
+%     images_size = a.bytes;
+% 
+%     %make sure to leave a buffer
+%     try
+%         if images_size < actual_max_gpu_mem-MAX_GPU_MEM
+%             IMAGES = gpuArray(IMAGES);
+%             disp('loaded into memory');
+%         end
+%     catch IM
+%         disp('failed to load into GPU');
+%     end
+% end
 
 %
 %   Loop through batches of window pairs
@@ -183,11 +183,11 @@ JuqsesSTD = repmat(J,[1 1 BATCH_LENGTH]);
 
 
 %DWS - preload ref images into gpumemory to save time
-if cfg_data.Performance.UseGPU
-    REF_IMAGES = gpuArray(IMAGES(:,:,reference_frames));
-else
+% if cfg_data.Performance.UseGPU
+%     REF_IMAGES = gpuArray(IMAGES(:,:,reference_frames));
+% else
     REF_IMAGES = IMAGES(:,:,reference_frames);
-end
+% end
 
 for ibatch = 1 : N_BATCHES
     
@@ -226,11 +226,11 @@ for ibatch = 1 : N_BATCHES
     INDimg = (Juqses + yini(curr_wdws)) + (Iuqses + xini(curr_wdws)-1)*IM_HEIGHT + (tini(curr_wdws)-1)*IM_HEIGHT*IM_WIDTH;
     
     % Reshape images to array of windows, create in GPU memory or RAM.
-    if cfg_data.Performance.UseGPU
-        D = gpuArray(IMAGES(INDimg));
-    else
+    % if cfg_data.Performance.UseGPU
+    %     D = gpuArray(IMAGES(INDimg));
+    % else
         D = IMAGES(INDimg);
-    end
+    % end
     
     %
     % Cross correlation (in Fourier space for perfomance)
@@ -239,11 +239,13 @@ for ibatch = 1 : N_BATCHES
     D(1,1,:) = 0; % Set average = 0
     C = zeros(size(D),class(D));
 
-    %DWS C in GPU
+    % %DWS C in GPU
+    % if cfg_data.Performance.UseGPU
+    %     C = gpuArray(C);
+    % end
     if cfg_data.Performance.UseGPU
-        C = gpuArray(C);
+        C = zeros(size(D),class(D));
     end
-
 
     % Loop to accommodate Phase Average PIV (i.e. multiple reference frames)
     for iref = 1:N_REFS

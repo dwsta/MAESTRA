@@ -606,7 +606,8 @@ function z = InitialGuess(y,I)
         z = cell(size(y));        
         if license('test','image_toolbox')
             for i = 1:ny
-                [z{i},L] = bwdist(gather(I)); % RS: added gather() to accept gpuArrays
+                % [z{i},L] = bwdist(gather(I)); % RS: added gather() to accept gpuArrays
+                [z{i},L] = bwdist(I); % RS: added gather() to accept gpuArrays
                 z{i} = y{i};
                 z{i}(~I) = y{i}(L(~I));
             end

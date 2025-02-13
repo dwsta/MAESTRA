@@ -1,12 +1,10 @@
 clearvars;
 restoredefaultpath;
 
-% addpath 'D:\Cloud\Git\MAESTRA';
-% addpath 'H:\2023-03-25\Elastography\Contractility_GitHub';
-% addpath 'E:\Contractility_GitHub - Adithan\';
+addpath 'C:\Users\MercolaLab\Documents\Git\MAESTRA';
 
 % Read the jobfile
-rootdir = 'H:\T3_1224_CAT\contractility_run_20250119_123809\';
+rootdir = "H:\T2_1224_MSP\TMRM_bluebeads_interleaved_AK_OM_20241226190508\contractility_run_20241229_190803";
 t = readJobFile2('jobfile.csv', rootdir);
 
 % Search for deformations_pass_2.bin 
@@ -19,21 +17,21 @@ fileNames = cellfun(@(x) getFileName(x),files,'UniformOutput',false);
 % Rewrite config
 cfg_data =  contPIV.loadJsonConfig(fullfile(rootdir,'config.json'));
 
-whichPass = 1;
+whichPass = 2;
 
-% cfg_data.Deformation(3) = cfg_data.Deformation(2);
-% cfg_data.Deformation(3).wdw_size = 32;
-% cfg_data.Deformation(3).wdw_spacing = 16;
-% 
+% Read stiffness map
+msp = plateReader("H:\T2_1224_MSP\MSP_stiffness_T2_1224.csv");
+cfg_data.TFM.GelStifness = msp; 
+
 warning('off');
 
 N = length(files);
-w = waitbar(0,'PIV...');
+w = waitbar(0,'TFM...');
 w.UserData = N;
 
 for ifile = 1 : length(files)
     ifile
-    % w=waitbar(ifile/length(files));
+    waitbar(ifile/length(files),w);
     
     alias = fileNames{ifile};
     % Read the images
