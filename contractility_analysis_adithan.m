@@ -1,12 +1,20 @@
 clearvars;
 restoredefaultpath;
 
+<<<<<<< HEAD
 % addpath 'D:\Cloud\Git\MAESTRA';
+=======
+addpath 'D:\Cloud\Git\MAESTRA';
+>>>>>>> 9e6ef622927ff4bb9a0af627049158b42f3f193a
 % addpath 'H:\2023-03-25\Elastography\Contractility_GitHub';
 % addpath 'E:\Contractility_GitHub - Adithan\';
 
 % Read the jobfile
+<<<<<<< HEAD
 rootdir = 'H:\T3_1224_CAT\contractility_run_20250119_123809\';
+=======
+rootdir = 'E:\T3_1224_CAT\contractility_run_20250119_123809\';
+>>>>>>> 9e6ef622927ff4bb9a0af627049158b42f3f193a
 t = readJobFile2('jobfile.csv', rootdir);
 
 % Search for deformations_pass_2.bin 
